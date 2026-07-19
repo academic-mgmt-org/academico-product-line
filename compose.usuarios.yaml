@@ -1,0 +1,38 @@
+services:
+  usuarios:
+    build:
+      context: ./services/academico-usuarios
+    image: academico/usuarios:local
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      SERVICE_NAME: academico-usuarios
+      USUARIOS_API_KEY: ${USUARIOS_API_KEY:-local-usuarios-api-key-change-me}
+      AUTH_GATEWAY_TARGET: gateway:50050
+      AUTH_GRPC_TIMEOUT_MS: 5000
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-academic_management_db}
+      DB_USER: ${POSTGRES_USER:-academic_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+    ports:
+      - "${USUARIOS_PORT_HOST:-3002}:3002"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(3002,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  gateway:
+    environment:
+      USUARIOS_BASE_URL: usuarios:3002
+      USUARIOS_API_KEY: ${USUARIOS_API_KEY:-local-usuarios-api-key-change-me}
+    depends_on:
+      usuarios:
+        condition: service_healthy
+

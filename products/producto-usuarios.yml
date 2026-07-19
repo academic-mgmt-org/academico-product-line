@@ -1,0 +1,16 @@
+product:
+  id: academico-usuarios
+  name: Sistema Academico con Usuarios
+  description: Variante que agrega gestion de usuarios al producto minimo.
+
+features:
+  database: true
+  login: true
+  gateway: true
+  usuarios: true
+  matriculas: false
+  calificaciones: false
+  notificaciones: false
+  web: false
+  quality_gates: false
+

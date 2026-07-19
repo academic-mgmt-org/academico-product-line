@@ -17,9 +17,11 @@ test('la plataforma completa integra servicios, portal y observabilidad', () => 
     'matriculas',
     'calificaciones',
     'notificaciones',
+    'solicitudes',
     'web',
     'quality_gates'
   ]);
+  assert.ok(result.plan.compose_files.includes('compose.solicitudes.yaml'));
   assert.ok(result.plan.compose_files.includes('compose.web.yaml'));
   assert.ok(result.plan.compose_files.includes('compose.quality-gates.yaml'));
   const checks = result.plan.assets.flatMap((asset) => asset.verification ?? []);

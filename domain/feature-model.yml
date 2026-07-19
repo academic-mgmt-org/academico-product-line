@@ -14,6 +14,7 @@ features:
       - matriculas
       - calificaciones
       - notificaciones
+      - solicitudes
       - web
       - quality_gates
   database:
@@ -43,6 +44,9 @@ features:
   quality_gates:
     type: optional
     binding_time: pipeline
+  solicitudes:
+    type: optional
+    binding_time: assembly
 groups:
   deployment_target:
     type: xor
@@ -86,6 +90,10 @@ constraints:
   - id: notificaciones-requires-usuarios
     type: requires
     source: notificaciones
+    target: usuarios
+  - id: solicitudes-requires-usuarios
+    type: requires
+    source: solicitudes
     target: usuarios
   - id: web-requires-gateway
     type: requires

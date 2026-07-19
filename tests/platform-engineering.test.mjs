@@ -13,6 +13,7 @@ test('el chart implementa resiliencia, escalado y configuración segura', () => 
   assert.match(workloads, /kind: PodDisruptionBudget/);
   assert.match(values, /minReplicas: 2/);
   assert.match(values, /maxReplicas: 10/);
+  assert.match(values, /name: solicitudes/);
   assert.match(values, /requests:/);
   assert.match(values, /limits:/);
 });

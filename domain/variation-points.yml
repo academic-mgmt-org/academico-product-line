@@ -6,9 +6,9 @@ variation_points:
       - matriculas
       - calificaciones
       - notificaciones
+      - solicitudes
     binding_time: assembly
     mechanism: compose_fragment
-
   - id: user-interface
     description: Inclusion de la interfaz web.
     variants:
@@ -16,7 +16,6 @@ variation_points:
       - web
     binding_time: assembly
     mechanism: asset_selection
-
   - id: deployment-target
     description: Plataforma donde se despliega el producto derivado.
     variants:
@@ -25,7 +24,6 @@ variation_points:
     cardinality: exactly_one
     binding_time: deployment
     mechanism: generated_infrastructure
-
   - id: notification-channel
     description: Canales habilitados cuando se seleccionan notificaciones.
     parent: notificaciones
@@ -35,7 +33,6 @@ variation_points:
     cardinality: one_or_more
     binding_time: configuration
     mechanism: environment_and_adapter
-
   - id: quality-platform
     description: Ejecucion local o remota de controles de calidad.
     variants:

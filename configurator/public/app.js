@@ -147,6 +147,7 @@ const descriptions = {
   matriculas: 'Flujo de inscripción y gestión de matrículas.',
   calificaciones: 'Registro, reglas y consulta de notas académicas.',
   notificaciones: 'Mensajes por correo y dentro de la aplicación.',
+  solicitudes: 'Trámites académicos, seguimiento, documentos y resolución administrativa.',
   web: 'Portal Laravel para interacción de estudiantes y operadores.',
   quality_gates: 'Prometheus, Grafana y tablero de calidad continua.'
 };

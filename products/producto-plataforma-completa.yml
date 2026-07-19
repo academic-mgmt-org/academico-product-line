@@ -2,7 +2,6 @@ product:
   id: academico-plataforma-completa
   name: Plataforma Academica Completa
   description: Producto con backend, interfaz web y observabilidad de quality gates.
-
 features:
   database: true
   login: true
@@ -13,7 +12,7 @@ features:
   notificaciones: true
   web: true
   quality_gates: true
-
+  solicitudes: true
 variants:
   deployment_target: docker_compose
   notification_channel:

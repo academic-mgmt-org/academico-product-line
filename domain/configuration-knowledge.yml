@@ -32,6 +32,9 @@ rules:
   - id: assemble-notificaciones
     when: notificaciones
     asset: notificaciones
+  - id: assemble-solicitudes
+    when: solicitudes
+    asset: solicitudes
   - id: assemble-web
     when: web
     asset: web

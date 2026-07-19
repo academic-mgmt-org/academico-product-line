@@ -1,0 +1,66 @@
+services:
+  solicitudes-migrations:
+    image: academico/postgres:local
+    entrypoint: ["psql"]
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+      PGSSLMODE: require
+    volumes:
+      - ./services/academico-solicitudes/database/migrations:/migrations:ro
+    command:
+      - -v
+      - ON_ERROR_STOP=1
+      - -h
+      - database
+      - -p
+      - "5432"
+      - -U
+      - ${POSTGRES_USER:-academic_user}
+      - -d
+      - ${POSTGRES_DB:-academic_management_db}
+      - -f
+      - /migrations/V1__core_asset_solicitudes.sql
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    restart: "no"
+    networks: [academico]
+
+  solicitudes:
+    build:
+      context: ./services/academico-solicitudes
+    image: academico/solicitudes:local
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+      SERVICE_NAME: academico-solicitudes
+      SOLICITUDES_API_KEY: ${SOLICITUDES_API_KEY:-local-solicitudes-api-key-change-me}
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-academic_management_db}
+      DB_USER: ${POSTGRES_USER:-academic_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+      DB_SSLMODE: require
+      PGSSLMODE: require
+    ports:
+      - "${SOLICITUDES_PORT_HOST:-3006}:3006"
+    depends_on:
+      solicitudes-migrations:
+        condition: service_completed_successfully
+      usuarios:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(3006,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  gateway:
+    environment:
+      SOLICITUDES_BASE_URL: solicitudes:3006
+      SOLICITUDES_API_KEY: ${SOLICITUDES_API_KEY:-local-solicitudes-api-key-change-me}
+    depends_on:
+      solicitudes:
+        condition: service_healthy

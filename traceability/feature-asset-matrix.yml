@@ -58,6 +58,16 @@ mappings:
     verification:
       - notificaciones_healthy
       - gateway_reports_notificaciones_serving
+  - requirement: REQ-REQUESTS-001
+    feature: solicitudes
+    asset: solicitudes
+    artifacts:
+      - compose.solicitudes.yaml
+      - services/academico-solicitudes/database/migrations/V1__core_asset_solicitudes.sql
+    verification:
+      - solicitudes_migrations_complete
+      - solicitudes_healthy
+      - gateway_reports_solicitudes_serving
   - requirement: REQ-WEB-001
     feature: web
     asset: web

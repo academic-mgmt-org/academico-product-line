@@ -26,5 +26,5 @@ de correo local usa el modo `log`, por lo que no requiere credenciales externas.
 .\scripts\generate-product.ps1 .\products\producto-academico-completo.yml down
 ```
 
-La derivacion genera una copia independiente de los siete activos y un plan de
+La derivacion genera una copia independiente de los ocho activos y un plan de
 verificacion trazable en `generated/academico-completo/tests/`.

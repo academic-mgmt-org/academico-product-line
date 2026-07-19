@@ -1,6 +1,6 @@
 # Producto plataforma completa
 
-Esta configuración demuestra la derivación del producto más amplio de la línea: base de datos, autenticación, gateway, usuarios, matrículas, calificaciones, notificaciones, portal web y monitoreo de quality gates.
+Esta configuración demuestra la derivación del producto más amplio de la línea: base de datos, autenticación, gateway, usuarios, matrículas, calificaciones, notificaciones, solicitudes académicas, portal web y monitoreo de quality gates.
 
 ## Derivación
 

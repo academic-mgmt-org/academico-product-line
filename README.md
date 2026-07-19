@@ -18,7 +18,7 @@ npm test
 .\scripts\generate-product.ps1 .\products\producto-usuarios.yml down
 ```
 
-La variante de demostración con los nueve core assets está documentada en
+La variante de demostración con los diez core assets está documentada en
 docs/producto-plataforma-completa.md.
 
 ## Configurador visual

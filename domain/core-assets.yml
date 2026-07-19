@@ -106,3 +106,15 @@ assets:
     compose_files: []
     verification:
       - generation_smoke
+  solicitudes:
+    repository: https://github.com/academic-mgmt-org/academico-solicitudes.git
+    revision: main
+    local_path: services/academico-solicitudes
+    asset_type: microservice
+    compose_files:
+      - compose.solicitudes.yaml
+    verification:
+      - unit
+      - migrations
+      - container_health
+      - gateway_health

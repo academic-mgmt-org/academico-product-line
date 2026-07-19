@@ -1,0 +1,37 @@
+name: Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  domain-and-generator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:domain
+      - run: npm run test:coverage
+      - run: npm audit --audit-level=moderate
+
+  derivation-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run assets:sync -- products/producto-minimo.yml
+      - run: npm run generate -- products/producto-minimo.yml derive
+      - run: test -f generated/academico-minimo/product-manifest.json
+      - run: docker compose -f generated/academico-minimo/compose.yaml -f generated/academico-minimo/compose.override.yaml -f generated/academico-minimo/compose.product.yaml config --quiet

@@ -7,7 +7,9 @@
   "scripts": {
     "validate:domain": "node scripts/validate-domain.mjs",
     "generate": "node scripts/generate-product.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "assets:sync": "node scripts/sync-assets.mjs",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=scripts/lib/*.mjs --test-coverage-lines=80 tests/*.test.mjs"
   },
   "engines": {
     "node": ">=20"

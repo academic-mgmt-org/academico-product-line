@@ -19,6 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run validate:domain
+      - run: npm run assets:sync -- products/producto-minimo.yml
       - run: npm run test:coverage
       - run: npm audit --audit-level=moderate
 

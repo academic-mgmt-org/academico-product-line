@@ -61,12 +61,17 @@ mappings:
   - requirement: REQ-WEB-001
     feature: web
     asset: web
-    artifacts: []
+    artifacts:
+      - compose.web.yaml
     verification:
-      - planned
+      - web_healthy
+      - browser_smoke
   - requirement: REQ-QUALITY-001
     feature: quality_gates
     asset: quality_gates
-    artifacts: []
+    artifacts:
+      - compose.quality-gates.yaml
     verification:
-      - planned
+      - quality_dashboard_healthy
+      - prometheus_available
+      - grafana_available

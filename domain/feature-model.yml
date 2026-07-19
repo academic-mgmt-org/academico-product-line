@@ -1,9 +1,8 @@
-﻿model:
+model:
   id: academic-management
   name: Sistema de Gestion Academica
   root: academic_management
   version: 1.0.0
-
 features:
   academic_management:
     type: root
@@ -17,43 +16,33 @@ features:
       - notificaciones
       - web
       - quality_gates
-
   database:
     type: mandatory
     binding_time: assembly
-
   login:
     type: mandatory
     binding_time: assembly
-
   gateway:
     type: mandatory
     binding_time: assembly
-
   usuarios:
     type: optional
     binding_time: assembly
-
   matriculas:
     type: optional
     binding_time: assembly
-
   calificaciones:
     type: optional
     binding_time: assembly
-
   notificaciones:
     type: optional
     binding_time: assembly
-
   web:
     type: optional
     binding_time: assembly
-
   quality_gates:
     type: optional
     binding_time: pipeline
-
 groups:
   deployment_target:
     type: xor
@@ -61,58 +50,52 @@ groups:
     members:
       - docker_compose
       - kubernetes
-
   notification_channel:
     type: or
     parent: notificaciones
     members:
       - email
       - in_app
-
   quality_platform:
     type: xor
     default: local_quality_gates
     members:
       - local_quality_gates
       - ci_quality_gates
-
 constraints:
   - id: login-requires-database
     type: requires
     source: login
     target: database
-
   - id: gateway-requires-login
     type: requires
     source: gateway
     target: login
-
   - id: usuarios-requires-login
     type: requires
     source: usuarios
     target: login
-
   - id: matriculas-requires-usuarios
     type: requires
     source: matriculas
     target: usuarios
-
   - id: calificaciones-requires-matriculas
     type: requires
     source: calificaciones
     target: matriculas
-
   - id: notificaciones-requires-usuarios
     type: requires
     source: notificaciones
     target: usuarios
-
   - id: web-requires-gateway
     type: requires
     source: web
     target: gateway
-
   - id: kubernetes-excludes-local-quality-gates
     type: excludes
     source: kubernetes
     target: local_quality_gates
+  - id: quality-gates-requires-gateway
+    type: requires
+    source: quality_gates
+    target: gateway

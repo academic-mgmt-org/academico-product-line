@@ -35,8 +35,6 @@ rules:
   - id: assemble-web
     when: web
     asset: web
-    status: planned
   - id: enable-quality-gates
     when: quality_gates
     asset: quality_gates
-    status: planned

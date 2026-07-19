@@ -81,18 +81,23 @@ assets:
     revision: main
     local_path: services/academico-web
     asset_type: frontend
-    compose_files: []
+    compose_files:
+      - compose.web.yaml
     verification:
       - unit
+      - container_health
       - browser_smoke
   quality_gates:
     repository: https://github.com/academic-mgmt-org/academico-quality-gates.git
     revision: main
     local_path: services/academico-quality-gates
     asset_type: platform
-    compose_files: []
+    compose_files:
+      - compose.quality-gates.yaml
     verification:
       - configuration
+      - container_health
+      - metrics_available
   scaffolding:
     repository: https://github.com/academic-mgmt-org/academico-scaffolding.git
     revision: main

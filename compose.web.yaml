@@ -1,0 +1,60 @@
+services:
+  web-certificates:
+    image: alpine:3.20
+    command:
+      - sh
+      - -ec
+      - |
+        apk add --no-cache openssl
+        mkdir -p /certs/live/localhost
+        if [ ! -f /certs/live/localhost/fullchain.pem ]; then
+          openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+            -keyout /certs/live/localhost/privkey.pem \
+            -out /certs/live/localhost/fullchain.pem \
+            -subj /CN=localhost
+        fi
+    volumes:
+      - web-certificates:/certs
+    restart: "no"
+
+  web:
+    build:
+      context: ./services/academico-web
+    image: academico/web:local
+    environment:
+      APP_NAME: ${APP_NAME:-Sistema Academico}
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY:-base64:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:8081}
+      DB_CONNECTION: sqlite
+      SERVICE_DRIVER: grpc
+      SERVICE_GRPC_HOST: gateway:50050
+      NGINX_SERVER_NAME: localhost
+      NGINX_SSL_CERTIFICATE: /etc/letsencrypt/live/localhost/fullchain.pem
+      NGINX_SSL_CERTIFICATE_KEY: /etc/letsencrypt/live/localhost/privkey.pem
+    ports:
+      - "${WEB_HTTP_PORT_HOST:-8081}:80"
+      - "${WEB_HTTPS_PORT_HOST:-8443}:443"
+    volumes:
+      - web-certificates:/etc/letsencrypt:ro
+      - web-database:/var/www/database
+      - web-storage:/var/www/storage
+    depends_on:
+      web-certificates:
+        condition: service_completed_successfully
+      gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    networks: [academico]
+
+volumes:
+  web-certificates:
+  web-database:
+  web-storage:
+

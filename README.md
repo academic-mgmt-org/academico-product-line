@@ -1,4 +1,4 @@
-﻿# academico-product-line
+# academico-product-line
 
 Fabrica de software para modelar, validar y derivar productos de la familia del Sistema de Gestion Academica.
 
@@ -17,6 +17,9 @@ npm test
 .\scripts\generate-product.ps1 .\products\producto-usuarios.yml up
 .\scripts\generate-product.ps1 .\products\producto-usuarios.yml down
 ```
+
+La variante de demostración con los nueve core assets está documentada en
+docs/producto-plataforma-completa.md.
 
 ## Fuentes de verdad
 

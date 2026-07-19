@@ -1,0 +1,91 @@
+services:
+  quality-dashboard:
+    build:
+      context: ./services/academico-quality-gates
+    image: academico/quality-dashboard:local
+    ports:
+      - "${QUALITY_DASHBOARD_PORT_HOST:-8080}:80"
+    depends_on:
+      prometheus:
+        condition: service_started
+      grafana:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  quality-exporter:
+    build:
+      context: ./services/academico-quality-gates/exporter
+    image: academico/quality-exporter:local
+    environment:
+      ACADEMICO_GATEWAY_HOST: gateway
+      ACADEMICO_GATEWAY_PORT: 50050
+      QUALITY_GATES_SOURCE: ${QUALITY_GATES_SOURCE:-auto}
+      EXPORTER_PORT: 9200
+      COVERAGE_THRESHOLD_PERCENT: ${COVERAGE_THRESHOLD_PERCENT:-80}
+      CRITICAL_VULNERABILITIES_TARGET: 0
+      CRITICAL_BUGS_TARGET: 0
+      AVAILABILITY_TARGET_RATIO: ${AVAILABILITY_TARGET_RATIO:-0.99}
+      PROBE_TIMEOUT_MS: 2500
+    ports:
+      - "${QUALITY_EXPORTER_PORT_HOST:-9200}:9200"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(9200,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    ports:
+      - "${PROMETHEUS_PORT_HOST:-9090}:9090"
+    volumes:
+      - ./services/academico-quality-gates/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./services/academico-quality-gates/monitoring/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      quality-exporter:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [academico]
+
+  grafana:
+    image: grafana/grafana:13.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change-me-local}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3007/}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/quality-gates-service.json
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+    ports:
+      - "${GRAFANA_PORT_HOST:-3007}:3000"
+    volumes:
+      - ./services/academico-quality-gates/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./services/academico-quality-gates/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_started
+    restart: unless-stopped
+    networks: [academico]
+
+volumes:
+  prometheus-data:
+  grafana-data:
+

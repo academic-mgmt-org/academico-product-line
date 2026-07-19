@@ -1,0 +1,75 @@
+traceability:
+  version: 1.0.0
+
+mappings:
+  - requirement: REQ-CORE-001
+    feature: database
+    asset: database
+    artifacts:
+      - compose.yaml
+      - docker/database.Dockerfile
+      - docker/migrations.Dockerfile
+    verification:
+      - migrations_complete
+      - database_healthy
+
+  - requirement: REQ-AUTH-001
+    feature: login
+    asset: login
+    artifacts:
+      - compose.yaml
+    verification:
+      - login_healthy
+      - gateway_reports_login_serving
+
+  - requirement: REQ-GATEWAY-001
+    feature: gateway
+    asset: gateway
+    artifacts:
+      - compose.yaml
+    verification:
+      - gateway_healthy
+
+  - requirement: REQ-USERS-001
+    feature: usuarios
+    asset: usuarios
+    artifacts:
+      - compose.usuarios.yaml
+    verification:
+      - usuarios_healthy
+      - gateway_reports_usuarios_serving
+
+  - requirement: REQ-ENROLL-001
+    feature: matriculas
+    asset: matriculas
+    artifacts: []
+    verification:
+      - planned
+
+  - requirement: REQ-GRADES-001
+    feature: calificaciones
+    asset: calificaciones
+    artifacts: []
+    verification:
+      - planned
+
+  - requirement: REQ-NOTIFY-001
+    feature: notificaciones
+    asset: notificaciones
+    artifacts: []
+    verification:
+      - planned
+
+  - requirement: REQ-WEB-001
+    feature: web
+    asset: web
+    artifacts: []
+    verification:
+      - planned
+
+  - requirement: REQ-QUALITY-001
+    feature: quality_gates
+    asset: quality_gates
+    artifacts: []
+    verification:
+      - planned

@@ -1,37 +1,28 @@
-# Generador de productos
+﻿# Generador de productos
 
-El generador lee una definicion de `products/`, valida sus caracteristicas y
-selecciona automaticamente los archivos Compose necesarios.
+El generador lee la definicion seleccionada y los artefactos de ingenieria de dominio. Valida obligatoriedad, dependencias `requires`, incompatibilidades `excludes`, grupos XOR/OR, disponibilidad de activos y trazabilidad.
 
-## Ver el plan
+## Preparacion
 
 ```powershell
-.\scripts\generate-product.ps1 .\products\producto-minimo.yml
-.\scripts\generate-product.ps1 .\products\producto-usuarios.yml
+npm ci
+npm run validate:domain
+npm test
 ```
 
-Cada ejecucion guarda la seleccion resuelta en
-`generated/<producto>/selection.json`. La carpeta `generated/` no se versiona.
+## Ver un plan
 
-## Iniciar un producto
+```powershell
+.\scripts\generate-product.ps1 .\products\producto-minimo.yml plan
+```
+
+El resultado reproducible se guarda en `generated/<producto>/selection.json` e incluye features, variantes, repositorios, revisiones, Compose y pruebas relacionadas.
+
+## Iniciar y detener
 
 ```powershell
 .\scripts\generate-product.ps1 .\products\producto-usuarios.yml up
-```
-
-El generador ejecuta el bootstrap correspondiente y levanta solo los Compose
-necesarios para las caracteristicas activas.
-
-## Detener un producto
-
-```powershell
 .\scripts\generate-product.ps1 .\products\producto-usuarios.yml down
 ```
 
-Este comando conserva el volumen PostgreSQL. No usa `down -v`.
-
-## Ejecutar las pruebas del selector
-
-```powershell
-.\tests\generator.tests.ps1
-```
+`up` adquiere o actualiza solo los core assets seleccionados y ensambla los fragmentos Compose registrados. `down` conserva los volumenes de datos.

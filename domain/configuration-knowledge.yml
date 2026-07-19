@@ -1,0 +1,54 @@
+knowledge:
+  version: 1.0.0
+  resolution_order:
+    - validate
+    - acquire
+    - assemble
+    - configure
+    - verify
+
+rules:
+  - id: assemble-database
+    when: database
+    asset: database
+    bootstrap: scripts/bootstrap.ps1
+
+  - id: assemble-login
+    when: login
+    asset: login
+    bootstrap: scripts/bootstrap.ps1
+
+  - id: assemble-gateway
+    when: gateway
+    asset: gateway
+    bootstrap: scripts/bootstrap.ps1
+
+  - id: assemble-usuarios
+    when: usuarios
+    asset: usuarios
+    bootstrap: scripts/bootstrap-usuarios.ps1
+
+  - id: assemble-matriculas
+    when: matriculas
+    asset: matriculas
+    status: planned
+
+  - id: assemble-calificaciones
+    when: calificaciones
+    asset: calificaciones
+    status: planned
+
+  - id: assemble-notificaciones
+    when: notificaciones
+    asset: notificaciones
+    status: planned
+
+  - id: assemble-web
+    when: web
+    asset: web
+    status: planned
+
+  - id: enable-quality-gates
+    when: quality_gates
+    asset: quality_gates
+    status: planned

@@ -1,0 +1,104 @@
+catalog:
+  id: academic-core-assets
+  version: 1.0.0
+
+assets:
+  database:
+    repository: https://github.com/academic-mgmt-org/academico-esquema-bd.git
+    revision: main
+    local_path: services/academico-esquema-bd
+    asset_type: database
+    compose_files:
+      - compose.yaml
+      - compose.override.yaml
+    verification:
+      - migrations
+      - container_health
+
+  login:
+    repository: https://github.com/academic-mgmt-org/academico-login.git
+    revision: main
+    local_path: services/academico-login
+    asset_type: microservice
+    compose_files:
+      - compose.yaml
+    verification:
+      - unit
+      - container_health
+
+  gateway:
+    repository: https://github.com/academic-mgmt-org/academico-gateway.git
+    revision: main
+    local_path: services/academico-gateway
+    asset_type: gateway
+    compose_files:
+      - compose.yaml
+    verification:
+      - unit
+      - grpc_health
+
+  usuarios:
+    repository: https://github.com/academic-mgmt-org/academico-usuarios.git
+    revision: main
+    local_path: services/academico-usuarios
+    asset_type: microservice
+    compose_files:
+      - compose.usuarios.yaml
+    verification:
+      - unit
+      - container_health
+
+  matriculas:
+    repository: https://github.com/academic-mgmt-org/academico-matriculas.git
+    revision: main
+    local_path: services/academico-matriculas
+    asset_type: microservice
+    compose_files: []
+    verification:
+      - unit
+
+  calificaciones:
+    repository: https://github.com/academic-mgmt-org/academico-calificaciones.git
+    revision: main
+    local_path: services/academico-calificaciones
+    asset_type: microservice
+    compose_files: []
+    verification:
+      - unit
+
+  notificaciones:
+    repository: https://github.com/academic-mgmt-org/academico-notificaciones.git
+    revision: main
+    local_path: services/academico-notificaciones
+    asset_type: microservice
+    compose_files: []
+    verification:
+      - unit
+
+  web:
+    repository: https://github.com/academic-mgmt-org/academico-web.git
+    revision: main
+    local_path: services/academico-web
+    asset_type: frontend
+    compose_files: []
+    verification:
+      - unit
+      - browser_smoke
+
+  quality_gates:
+    repository: https://github.com/academic-mgmt-org/academico-quality-gates.git
+    revision: main
+    local_path: services/academico-quality-gates
+    asset_type: platform
+    compose_files: []
+    verification:
+      - configuration
+
+  scaffolding:
+    repository: https://github.com/academic-mgmt-org/academico-scaffolding.git
+    revision: main
+    local_path: services/academico-scaffolding
+    asset_type: template
+    compose_files: []
+    verification:
+      - generation_smoke

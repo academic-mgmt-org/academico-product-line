@@ -1,0 +1,45 @@
+variation_points:
+  - id: business-capabilities
+    description: Seleccion de modulos funcionales del sistema academico.
+    variants:
+      - usuarios
+      - matriculas
+      - calificaciones
+      - notificaciones
+    binding_time: assembly
+    mechanism: compose_fragment
+
+  - id: user-interface
+    description: Inclusion de la interfaz web.
+    variants:
+      - api_only
+      - web
+    binding_time: assembly
+    mechanism: asset_selection
+
+  - id: deployment-target
+    description: Plataforma donde se despliega el producto derivado.
+    variants:
+      - docker_compose
+      - kubernetes
+    cardinality: exactly_one
+    binding_time: deployment
+    mechanism: generated_infrastructure
+
+  - id: notification-channel
+    description: Canales habilitados cuando se seleccionan notificaciones.
+    parent: notificaciones
+    variants:
+      - email
+      - in_app
+    cardinality: one_or_more
+    binding_time: configuration
+    mechanism: environment_and_adapter
+
+  - id: quality-platform
+    description: Ejecucion local o remota de controles de calidad.
+    variants:
+      - local_quality_gates
+      - ci_quality_gates
+    binding_time: pipeline
+    mechanism: workflow_selection

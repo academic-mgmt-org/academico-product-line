@@ -1,0 +1,22 @@
+metrics:
+  deployment_frequency:
+    source: github_deployments
+    unit: deployments_per_week
+  lead_time_for_changes:
+    source: commit_to_production_deployment
+    unit: hours
+  change_failure_rate:
+    source: failed_production_deployments
+    unit: percentage
+  mean_time_to_restore:
+    source: incident_open_to_recovery
+    unit: minutes
+logging:
+  format: json
+  required_fields:
+    - timestamp
+    - level
+    - service
+    - environment
+    - trace_id
+    - message

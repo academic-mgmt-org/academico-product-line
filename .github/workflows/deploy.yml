@@ -1,0 +1,66 @@
+name: Deploy promoted release
+
+on:
+  workflow_run:
+    workflows: [Publish images]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Etiqueta inmutable publicada en GHCR
+        required: true
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  staging:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Deploy staging atomically
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag || github.event.workflow_run.head_sha }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: >-
+          helm upgrade --install academico k8s/chart/academico-product
+          --namespace academico-staging --create-namespace --atomic --wait
+          --set global.imageTag="$IMAGE_TAG"
+          --set secret.databasePassword="$DB_PASSWORD"
+          --set secret.jwtSecret="$JWT_SECRET"
+      - run: kubectl rollout status deployment --all -n academico-staging --timeout=5m
+
+  production:
+    needs: staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - name: Promote the same immutable images
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag || github.event.workflow_run.head_sha }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: >-
+          helm upgrade --install academico k8s/chart/academico-product
+          --namespace academico-production --create-namespace --atomic --wait
+          --set global.imageTag="$IMAGE_TAG"
+          --set secret.databasePassword="$DB_PASSWORD"
+          --set secret.jwtSecret="$JWT_SECRET"
+      - run: kubectl rollout status deployment --all -n academico-production --timeout=5m

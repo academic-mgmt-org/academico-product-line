@@ -1,0 +1,6 @@
+apiVersion: v2
+name: academico-product
+description: Chart parametrizado para productos derivados de la LPS académica
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

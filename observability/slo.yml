@@ -1,0 +1,19 @@
+service: academico-product
+window: 30d
+objectives:
+  availability:
+    sli: successful_requests / total_requests
+    target: 0.999
+  latency:
+    sli: requests_below_500ms / total_requests
+    target: 0.95
+  error_rate:
+    sli: failed_requests / total_requests
+    maximum: 0.01
+alerting:
+  fast_burn:
+    window: 1h
+    burn_rate: 14.4
+  slow_burn:
+    window: 6h
+    burn_rate: 6

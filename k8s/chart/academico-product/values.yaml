@@ -1,0 +1,61 @@
+global:
+  registry: ghcr.io/academic-mgmt-org
+  imageTag: latest
+  imagePullPolicy: IfNotPresent
+
+config:
+  nodeEnv: production
+  logLevel: info
+  databaseHost: academico-database
+  databasePort: "5432"
+
+secret:
+  create: true
+  databaseUser: academico
+  databasePassword: change-me
+  jwtSecret: change-me
+
+components:
+  - name: login
+    port: 3001
+  - name: gateway
+    port: 50050
+  - name: usuarios
+    port: 3002
+  - name: matriculas
+    port: 3005
+  - name: calificaciones
+    port: 3004
+  - name: notificaciones
+    port: 3003
+  - name: web
+    port: 80
+  - name: quality-dashboard
+    port: 80
+  - name: quality-exporter
+    port: 9200
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+monitoring:
+  enabled: false
+  availabilitySlo: 99.9
+  latencyP95Seconds: 0.5

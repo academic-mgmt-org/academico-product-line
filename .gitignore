@@ -1,5 +1,10 @@
-﻿.env
+.env
 generated/
 services/
 
 node_modules/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example

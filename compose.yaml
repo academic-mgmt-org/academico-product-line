@@ -1,0 +1,113 @@
+name: academico-minimo
+
+services:
+  database:
+    build:
+      context: .
+      dockerfile: docker/database.Dockerfile
+    image: academico/postgres:local
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-academic_management_db}
+      POSTGRES_USER: ${POSTGRES_USER:-academic_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+      POSTGRES_SSL_CN: database
+    ports:
+      - "${DB_PORT_HOST:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    command:
+      - postgres
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/var/lib/postgresql/ssl/server.crt
+      - -c
+      - ssl_key_file=/var/lib/postgresql/ssl/server.key
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-academic_user} -d ${POSTGRES_DB:-academic_management_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  migrations:
+    image: academico/postgres:local
+    entrypoint: ["sh"]
+    working_dir: /workspace
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-academic_management_db}
+      DB_USER: ${POSTGRES_USER:-academic_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+      PGSSLMODE: require
+    volumes:
+      - ./services/academico-esquema-bd:/workspace:ro
+    command: ["scripts/apply-migrations.sh"]
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+    networks: [academico]
+
+  login:
+    build:
+      context: ./services/academico-login
+    image: academico/login:local
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      SERVICE_NAME: academico-login
+      LOGIN_API_KEY: ${LOGIN_API_KEY:-local-login-api-key-change-me}
+      JWT_SECRET: ${JWT_SECRET:-local-jwt-secret-change-me}
+      JWT_DOC_SECRET: ${JWT_DOC_SECRET:-local-jwt-doc-secret-change-me}
+      JWT_ACCESS_TTL: 2h
+      JWT_REFRESH_TTL: 7d
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-academic_management_db}
+      DB_USER: ${POSTGRES_USER:-academic_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+    ports:
+      - "${LOGIN_PORT_HOST:-3001}:3001"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(3001,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  gateway:
+    build:
+      context: ./services/academico-gateway
+    image: academico/gateway:local
+    environment:
+      NODE_ENV: production
+      GRPC_PORT: 50050
+      LOGIN_BASE_URL: login:3001
+      LOGIN_API_KEY: ${LOGIN_API_KEY:-local-login-api-key-change-me}
+    ports:
+      - "${GATEWAY_PORT_HOST:-50050}:50050"
+    depends_on:
+      login:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(50050,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+networks:
+  academico:
+    name: academico-minimo
+
+volumes:
+  postgres-data:
+

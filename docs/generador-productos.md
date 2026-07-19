@@ -1,6 +1,8 @@
-﻿# Generador de productos
+# Generador de productos
 
-El generador lee la definicion seleccionada y los artefactos de ingenieria de dominio. Valida obligatoriedad, dependencias `requires`, incompatibilidades `excludes`, grupos XOR/OR, disponibilidad de activos y trazabilidad.
+El generador lee la definicion seleccionada y los artefactos de ingenieria de
+dominio. Valida obligatoriedad, dependencias `requires`, incompatibilidades
+`excludes`, grupos XOR/OR, disponibilidad de activos y trazabilidad.
 
 ## Preparacion
 
@@ -16,7 +18,18 @@ npm test
 .\scripts\generate-product.ps1 .\products\producto-minimo.yml plan
 ```
 
-El resultado reproducible se guarda en `generated/<producto>/selection.json` e incluye features, variantes, repositorios, revisiones, Compose y pruebas relacionadas.
+El resultado se guarda en `generated/<producto>/selection.json` e incluye
+features, variantes, repositorios, revisiones, Compose y pruebas relacionadas.
+
+## Derivar un producto independiente
+
+```powershell
+.\scripts\generate-product.ps1 .\products\producto-minimo.yml derive
+```
+
+La carpeta `generated/<producto>/` contiene los core assets seleccionados sin
+sus historiales Git, Docker, configuracion, scripts de ciclo de vida, pruebas,
+README y el manifiesto trazable del producto.
 
 ## Iniciar y detener
 
@@ -25,4 +38,5 @@ El resultado reproducible se guarda en `generated/<producto>/selection.json` e i
 .\scripts\generate-product.ps1 .\products\producto-usuarios.yml down
 ```
 
-`up` adquiere o actualiza solo los core assets seleccionados y ensambla los fragmentos Compose registrados. `down` conserva los volumenes de datos.
+`up` deriva el producto y lo inicia desde su propia carpeta. `down` conserva los
+volumenes de datos.

@@ -3,7 +3,7 @@
     [string]$ProductPath,
 
     [Parameter(Position = 1)]
-    [ValidateSet('plan', 'up', 'down')]
+    [ValidateSet('plan', 'derive', 'up', 'down')]
     [string]$Action = 'plan'
 )
 

@@ -1,0 +1,22 @@
+product:
+  id: academico-completo
+  name: Sistema Academico Completo
+  description: Variante con todas las capacidades academicas de backend.
+
+features:
+  database: true
+  login: true
+  gateway: true
+  usuarios: true
+  matriculas: true
+  calificaciones: true
+  notificaciones: true
+  web: false
+  quality_gates: false
+
+variants:
+  deployment_target: docker_compose
+  notification_channel:
+    - email
+    - in_app
+  quality_platform: local_quality_gates

@@ -1,7 +1,6 @@
 catalog:
   id: academic-core-assets
   version: 1.0.0
-
 assets:
   database:
     repository: https://github.com/academic-mgmt-org/academico-esquema-bd.git
@@ -14,7 +13,6 @@ assets:
     verification:
       - migrations
       - container_health
-
   login:
     repository: https://github.com/academic-mgmt-org/academico-login.git
     revision: main
@@ -25,7 +23,6 @@ assets:
     verification:
       - unit
       - container_health
-
   gateway:
     repository: https://github.com/academic-mgmt-org/academico-gateway.git
     revision: main
@@ -36,7 +33,6 @@ assets:
     verification:
       - unit
       - grpc_health
-
   usuarios:
     repository: https://github.com/academic-mgmt-org/academico-usuarios.git
     revision: main
@@ -47,34 +43,39 @@ assets:
     verification:
       - unit
       - container_health
-
   matriculas:
     repository: https://github.com/academic-mgmt-org/academico-matriculas.git
     revision: main
     local_path: services/academico-matriculas
     asset_type: microservice
-    compose_files: []
+    compose_files:
+      - compose.matriculas.yaml
     verification:
       - unit
-
+      - container_health
+      - gateway_health
   calificaciones:
     repository: https://github.com/academic-mgmt-org/academico-calificaciones.git
     revision: main
     local_path: services/academico-calificaciones
     asset_type: microservice
-    compose_files: []
+    compose_files:
+      - compose.calificaciones.yaml
     verification:
       - unit
-
+      - container_health
+      - gateway_health
   notificaciones:
     repository: https://github.com/academic-mgmt-org/academico-notificaciones.git
     revision: main
     local_path: services/academico-notificaciones
     asset_type: microservice
-    compose_files: []
+    compose_files:
+      - compose.notificaciones.yaml
     verification:
       - unit
-
+      - container_health
+      - gateway_health
   web:
     repository: https://github.com/academic-mgmt-org/academico-web.git
     revision: main
@@ -84,7 +85,6 @@ assets:
     verification:
       - unit
       - browser_smoke
-
   quality_gates:
     repository: https://github.com/academic-mgmt-org/academico-quality-gates.git
     revision: main
@@ -93,7 +93,6 @@ assets:
     compose_files: []
     verification:
       - configuration
-
   scaffolding:
     repository: https://github.com/academic-mgmt-org/academico-scaffolding.git
     revision: main

@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadDomain, readYaml, resolveProduct, validateDomain } from '../scripts/lib/domain.mjs';
 
@@ -23,12 +23,11 @@ test('el producto de usuarios incorpora el activo y la trazabilidad de usuarios'
   assert.ok(result.plan.traceability.some((mapping) => mapping.feature === 'usuarios'));
 });
 
-test('matriculas requiere usuarios y no puede derivarse mientras este planificada', () => {
+test('matriculas requiere usuarios', () => {
   const product = readYaml('products/producto-minimo.yml');
   product.features.matriculas = true;
   const result = resolveProduct(product, domain);
   assert.ok(result.errors.some((error) => error.includes("requiere 'usuarios'")));
-  assert.ok(result.errors.some((error) => error.includes('aun no integradas')));
 });
 
 test('un grupo XOR rechaza selecciones multiples', () => {

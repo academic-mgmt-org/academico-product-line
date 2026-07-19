@@ -80,5 +80,3 @@ function productReadme(plan) {
   const assets = plan.assets.map((asset) => `- ${asset.name}: ${asset.repository}@${asset.revision}`).join('\n');
   return `# ${plan.product.name}\n\nProducto derivado automaticamente por academico-product-line.\n\n## Features\n\n${features}\n\n## Core assets\n\n${assets}\n\n## Uso\n\n\`\`\`powershell\nCopy-Item .env.example .env\n.\\scripts\\start.ps1\n.\\scripts\\status.ps1\n.\\scripts\\stop.ps1\n\`\`\`\n\nLa seleccion completa y su trazabilidad estan registradas en \`product-manifest.json\`.\n`;
 }
-
-

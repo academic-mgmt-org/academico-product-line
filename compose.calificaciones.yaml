@@ -1,0 +1,40 @@
+services:
+  calificaciones:
+    build:
+      context: ./services/academico-calificaciones
+    image: academico/calificaciones:local
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+      SERVICE_NAME: academico-calificaciones
+      CALIFICACIONES_API_KEY: ${CALIFICACIONES_API_KEY:-local-calificaciones-api-key-change-me}
+      CALIFICACIONES_NOTA_APROBACION: ${CALIFICACIONES_NOTA_APROBACION:-7}
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-academic_management_db}
+      DB_USER: ${POSTGRES_USER:-academic_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+      DB_SSLMODE: require
+      PGSSLMODE: require
+    ports:
+      - "${CALIFICACIONES_PORT_HOST:-3004}:3004"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      matriculas:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(3004,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  gateway:
+    environment:
+      CALIFICACIONES_BASE_URL: calificaciones:3004
+      CALIFICACIONES_API_KEY: ${CALIFICACIONES_API_KEY:-local-calificaciones-api-key-change-me}
+    depends_on:
+      calificaciones:
+        condition: service_healthy

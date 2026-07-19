@@ -1,6 +1,5 @@
 traceability:
   version: 1.0.0
-
 mappings:
   - requirement: REQ-CORE-001
     feature: database
@@ -12,7 +11,6 @@ mappings:
     verification:
       - migrations_complete
       - database_healthy
-
   - requirement: REQ-AUTH-001
     feature: login
     asset: login
@@ -21,7 +19,6 @@ mappings:
     verification:
       - login_healthy
       - gateway_reports_login_serving
-
   - requirement: REQ-GATEWAY-001
     feature: gateway
     asset: gateway
@@ -29,7 +26,6 @@ mappings:
       - compose.yaml
     verification:
       - gateway_healthy
-
   - requirement: REQ-USERS-001
     feature: usuarios
     asset: usuarios
@@ -38,35 +34,36 @@ mappings:
     verification:
       - usuarios_healthy
       - gateway_reports_usuarios_serving
-
   - requirement: REQ-ENROLL-001
     feature: matriculas
     asset: matriculas
-    artifacts: []
+    artifacts:
+      - compose.matriculas.yaml
     verification:
-      - planned
-
+      - matriculas_healthy
+      - gateway_reports_matriculas_serving
   - requirement: REQ-GRADES-001
     feature: calificaciones
     asset: calificaciones
-    artifacts: []
+    artifacts:
+      - compose.calificaciones.yaml
     verification:
-      - planned
-
+      - calificaciones_healthy
+      - gateway_reports_calificaciones_serving
   - requirement: REQ-NOTIFY-001
     feature: notificaciones
     asset: notificaciones
-    artifacts: []
+    artifacts:
+      - compose.notificaciones.yaml
     verification:
-      - planned
-
+      - notificaciones_healthy
+      - gateway_reports_notificaciones_serving
   - requirement: REQ-WEB-001
     feature: web
     asset: web
     artifacts: []
     verification:
       - planned
-
   - requirement: REQ-QUALITY-001
     feature: quality_gates
     asset: quality_gates

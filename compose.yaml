@@ -1,4 +1,4 @@
-name: academico-minimo
+﻿name: academico-minimo
 
 services:
   database:
@@ -106,8 +106,6 @@ services:
 
 networks:
   academico:
-    name: academico-minimo
 
 volumes:
   postgres-data:
-

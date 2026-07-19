@@ -1,0 +1,47 @@
+services:
+  notificaciones:
+    build:
+      context: ./services/academico-notificaciones
+    image: academico/notificaciones:local
+    environment:
+      NODE_ENV: production
+      ENV: production
+      PORT: 3003
+      SERVICE_NAME: academico-notificaciones
+      NOTIFICACIONES_API_KEY: ${NOTIFICACIONES_API_KEY:-local-notificaciones-api-key-change-me}
+      NOTIFICACIONES_AUTO_SEED: ${NOTIFICACIONES_AUTO_SEED:-false}
+      AUTH_GATEWAY_TARGET: gateway:50050
+      JWT_SECRET: ${JWT_SECRET:-local-jwt-secret-change-me}
+      JWT_DOC_SECRET: ${JWT_DOC_SECRET:-local-jwt-doc-secret-change-me}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-log}
+      EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-no-reply@academico.local}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Sistema Academico}
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-academic_management_db}
+      DB_USER: ${POSTGRES_USER:-academic_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-academic_password}
+      DB_SSLMODE: require
+      PGSSLMODE: require
+    ports:
+      - "${NOTIFICACIONES_PORT_HOST:-3003}:3003"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      usuarios:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(3003,'127.0.0.1',()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [academico]
+
+  gateway:
+    environment:
+      NOTIFICACIONES_BASE_URL: notificaciones:3003
+      NOTIFICACIONES_API_KEY: ${NOTIFICACIONES_API_KEY:-local-notificaciones-api-key-change-me}
+    depends_on:
+      notificaciones:
+        condition: service_healthy

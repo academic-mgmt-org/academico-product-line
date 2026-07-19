@@ -21,6 +21,19 @@ npm test
 La variante de demostración con los nueve core assets está documentada en
 docs/producto-plataforma-completa.md.
 
+## Configurador visual
+
+    npm run assets:sync -- products/producto-plataforma-completa.yml
+    npm run configurator
+
+Abre http://127.0.0.1:4173, selecciona capacidades y variantes, valida la combinación y deriva el producto. La guía está en docs/configurador.md.
+
+## Plataforma DevOps
+
+- Calidad, seguridad, publicación y promoción: docs/ci-cd.md.
+- Kubernetes, Terraform, observabilidad y rollback: docs/deployment-observability.md.
+- Evidencia completa frente al marco teórico: docs/cumplimiento-lps.md.
+- Operación cotidiana: docs/runbook.md.
 ## Fuentes de verdad
 
 - `domain/feature-model.yml`: modelo de caracteristicas y restricciones.

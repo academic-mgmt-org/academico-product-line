@@ -1,4 +1,4 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
 import { repositoryRoot } from './domain.mjs';
 
@@ -9,6 +9,7 @@ export function materializeProduct(plan, productSource, destination) {
   fs.mkdirSync(path.join(destination, 'services'), { recursive: true });
   fs.mkdirSync(path.join(destination, 'tests'), { recursive: true });
   fs.mkdirSync(path.join(destination, 'scripts'), { recursive: true });
+  fs.mkdirSync(path.join(destination, '.github', 'workflows'), { recursive: true });
 
   for (const asset of plan.assets) {
     const source = path.join(repositoryRoot, asset.local_path);
@@ -21,6 +22,9 @@ export function materializeProduct(plan, productSource, destination) {
     fs.copyFileSync(path.join(repositoryRoot, composeFile), path.join(destination, composeFile));
   }
   fs.cpSync(path.join(repositoryRoot, 'docker'), path.join(destination, 'docker'), { recursive: true, filter: copyFilter });
+  copyDirectoryIfPresent('k8s', destination);
+  copyDirectoryIfPresent('infrastructure', destination);
+  copyDirectoryIfPresent('observability', destination);
   copyIfPresent('.env.example', destination);
 
   fs.copyFileSync(productSource, path.join(destination, 'product.yml'));
@@ -32,6 +36,7 @@ export function materializeProduct(plan, productSource, destination) {
   fs.writeFileSync(path.join(destination, 'scripts', 'start.ps1'), lifecycleScript(plan, 'up --build -d'));
   fs.writeFileSync(path.join(destination, 'scripts', 'stop.ps1'), lifecycleScript(plan, 'down'));
   fs.writeFileSync(path.join(destination, 'scripts', 'status.ps1'), lifecycleScript(plan, 'ps'));
+  fs.writeFileSync(path.join(destination, '.github', 'workflows', 'product-ci.yml'), productWorkflow(plan));
 
   return destination;
 }
@@ -43,6 +48,11 @@ function copyFilter(source) {
 function copyIfPresent(relativePath, destination) {
   const source = path.join(repositoryRoot, relativePath);
   if (fs.existsSync(source)) fs.copyFileSync(source, path.join(destination, relativePath));
+}
+
+function copyDirectoryIfPresent(relativePath, destination) {
+  const source = path.join(repositoryRoot, relativePath);
+  if (fs.existsSync(source)) fs.cpSync(source, path.join(destination, relativePath), { recursive: true, filter: copyFilter });
 }
 
 function composeArguments(plan) {
@@ -79,4 +89,33 @@ function productReadme(plan) {
   const features = plan.selected_features.map((feature) => `- ${feature}`).join('\n');
   const assets = plan.assets.map((asset) => `- ${asset.name}: ${asset.repository}@${asset.revision}`).join('\n');
   return `# ${plan.product.name}\n\nProducto derivado automaticamente por academico-product-line.\n\n## Features\n\n${features}\n\n## Core assets\n\n${assets}\n\n## Uso\n\n\`\`\`powershell\nCopy-Item .env.example .env\n.\\scripts\\start.ps1\n.\\scripts\\status.ps1\n.\\scripts\\stop.ps1\n\`\`\`\n\nLa seleccion completa y su trazabilidad estan registradas en \`product-manifest.json\`.\n`;
+}
+function productWorkflow(plan) {
+  const compose = composeArguments(plan);
+  return [
+    'name: Product CI',
+    '',
+    'on:',
+    '  push:',
+    '  pull_request:',
+    '',
+    'permissions:',
+    '  contents: read',
+    '  security-events: write',
+    '',
+    'jobs:',
+    '  verify:',
+    '    runs-on: ubuntu-latest',
+    '    steps:',
+    '      - uses: actions/checkout@v4',
+    '      - run: docker compose ' + compose + ' config --quiet',
+    '      - run: docker compose ' + compose + ' build',
+    '      - uses: aquasecurity/trivy-action@0.28.0',
+    '        with:',
+    '          scan-type: fs',
+    '          scan-ref: .',
+    '          severity: HIGH,CRITICAL',
+    "          exit-code: '1'",
+    ''
+  ].join(String.fromCharCode(10));
 }

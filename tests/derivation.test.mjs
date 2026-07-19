@@ -24,6 +24,10 @@ test('materializa un producto independiente con solo los activos seleccionados',
     assert.ok(fs.existsSync(path.join(temporaryRoot, 'compose.product.yaml')));
     assert.ok(fs.existsSync(path.join(temporaryRoot, 'scripts', 'start.ps1')));
     assert.ok(fs.existsSync(path.join(temporaryRoot, 'tests', 'verification-plan.json')));
+    assert.ok(fs.existsSync(path.join(temporaryRoot, '.github', 'workflows', 'product-ci.yml')));
+    assert.ok(fs.existsSync(path.join(temporaryRoot, 'k8s', 'chart', 'academico-product', 'Chart.yaml')));
+    assert.ok(fs.existsSync(path.join(temporaryRoot, 'infrastructure', 'terraform', 'main.tf')));
+    assert.ok(fs.existsSync(path.join(temporaryRoot, 'observability', 'slo.yml')));
     assert.ok(fs.existsSync(path.join(temporaryRoot, 'services', 'academico-login')));
     assert.ok(fs.existsSync(path.join(temporaryRoot, 'services', 'academico-gateway')));
     assert.equal(fs.existsSync(path.join(temporaryRoot, 'services', 'academico-usuarios')), false);

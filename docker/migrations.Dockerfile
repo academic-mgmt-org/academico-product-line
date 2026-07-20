@@ -1,4 +1,4 @@
-FROM academico/postgres:local
+FROM postgres:15-alpine
 
 COPY services/academico-esquema-bd/scripts/apply-migrations.sh /usr/local/bin/apply-migrations.sh
 RUN sed -i 's/\r$//' /usr/local/bin/apply-migrations.sh \
